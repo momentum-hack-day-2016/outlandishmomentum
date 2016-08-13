@@ -2,8 +2,10 @@ doctype html
 html(lang="en")
   head
     title Momentum Voter Id | #{title || 'Home'}
-    script(type='text/javascript').
+    style
+      include ../assets/momentum.css
+    link(rel='shortcut icon', href='favicon.ico', type='image/x-icon')
+    link(href='momentum.css', rel='stylesheet')
   body
-    h1 Momentum Voter ID
     #container.col
       block content
