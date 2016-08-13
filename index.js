@@ -21,7 +21,8 @@ app.use(express.static(path.join(__dirname, 'assets')));
 
 // Only log requests after static files have been dealt with
 app.use(expressWinston.logger({
-  winstonInstance: logger
+  winstonInstance: logger,
+  expressFormat: true
 }));
 
 // Request parsing
@@ -32,9 +33,7 @@ app.use(bodyParser.raw({type: 'text/csv'}));
 const sessionMiddleware = session({
   secret: 'thisisasecret',
   key: 'sessionId',
-  cookie: {httpOnly: true, maxAge: 10000},
   resave: false,
-  rolling: true,
   saveUninitialized: false
 });
 
@@ -48,6 +47,7 @@ app.disable('x-powered-by');
  */
 
 app.use(passport.initialize());
+app.use(passport.session());
 
 // Switch authentication strategies based on request
 app.use(function (req, res, next) {
@@ -63,13 +63,29 @@ app.use(function (req, res, next) {
 
 app.use('/', require('./auth'));
 
+app.get('/login', function (req, res) {
+  res.render('login');
+});
+
 app.get('/', function (req, res) {
   res.render('home');
 });
 
-app.get('/page2', function (req, res) {
+
+
+// remaining pages are protected
+app.use(function (req, res, next) {
+  if (req.isAuthenticated()) {
+    return next()
+  }
+  res.redirect('/login');
+});
+
+app.get('/protected', function (req, res) {
   res.render('page2');
 });
+
+
 
 logger.info('listening on port 3000');
 server.listen(3000, '127.0.0.1');
