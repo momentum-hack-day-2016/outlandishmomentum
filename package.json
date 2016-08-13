@@ -1,0 +1,15 @@
+{
+  "name": "first",
+  "version": "0.0.0",
+  "description": "First stumbling steps with node.js and npm",
+  "main": "index.js",
+  "scripts": {
+    "test": "test_it"
+  },
+  "keywords": [
+    "firstgo",
+    "learning"
+  ],
+  "author": "Adam Goodman",
+  "license": "ISC"
+}

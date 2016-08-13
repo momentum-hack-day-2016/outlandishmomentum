@@ -1,0 +1,66 @@
+Other things to look at:
+Tools:
+http://www.w3.org/2001/sw/grddl-wg/ - grddl: microformat to RDF
+http://www.w3.org/TR/rdfa-syntax - RDFa: XHTML1.1 module for annotating xhtml (html5 coming)
+AJAX
+http://www.w3.org/TR/skos-reference - bridge from loose classification to Semantic web
+Need more on RDF SCHEMA
+http://www.ldodds.com/foaf/foaf-a-matic.html
+http://wiki.foaf-project.org/w/ScutterSpec
+http://protege.stanford.edu/ - ontology editor
+http://code.google.com/p/swoop/ - ditto
+http://www.neon-toolkit.org/ - ditto
+http://owl.cs.manchester.ac.uk/fact++/ - reasoner
+http://hermit-reasoner.com/
+http://lat.inf.tu-dresden.de/systems/cel/ - el reasoner
+http://www.dis.uniroma1.it/~quonto/ - ql reasoner
+http://www.oracle.com/technology/tech/semantic_technologies/index.html - rl reasoner
+http://owlapi.sourceforge.net/ - important!
+http://semanticweb.org/wiki/Tools - catalogue
+http://esw.w3.org/topic/SemanticWebTools - ditto
+
+
+Stuff:
+http://www.w3.org/2001/sw/BestPractices - sounds like practical tips
+http://thefigtrees.net/lee/sw/sparql-faq
+http://www.urbanlegends.com/
+http://www.snopes.com/
+
+Datasets/ontologies etc:
+http://schema.org/ (Important)
+https://support.google.com/webmasters/answer/99170?hl=en
+http://www.schemaweb.info/ 
+http://pingthesemanticweb.com/
+http://www.w3.org/DesignIssues/LinkedData.html
+http://dublincore.org/
+http://www.w3.org/TR/2012/REC-owl2-primer-20121211/#ref-owlprofilesintro
+
+
+Search Engines:
+http://iws.seu.edu.cn/services/falcons/objectsearch/index.jsp
+http://www.sindice.com/query/keyword
+http://kmi-web05.open.ac.uk/WatsonWUI/
+
+Browsers:
+http://dig.csail.mit.edu/2005/ajar/ajaw/tab.html
+http://www4.wiwiss.fu-berlin.de/rdf_browser/
+http://sig.ma/
+http://visinav.deri.org/
+http://demo.openlinksw.com/DAV/JS/rdfbrowser/index.html
+http://sioc-project.org/firefox (plug in)
+
+Data:
+http://dbpedia.org/
+http://www.ingentaconnect.com/
+http://www.w3.org/TR/wordnet-rdf/
+http://www.heppnetz.de/eclassowl
+http://www.geneontology.org/
+http://www.isb-sib.ch/~ejain/rdf/
+http://www.geonames.org/ontology/
+http://www.wikidata.org/
+http://www.europeana.eu/
+http://viaf.org/
+http://esw.w3.org/topic/GeoInfo
+
+
+
