@@ -90,7 +90,7 @@ app.use(function (req, res, next) {
 });
 
 app.get('/import', function (req, res) {
-  res.render('import');
+  res.render('import', pugArgs(req));
 });
 
 app.post('/import', function(req, res) {
@@ -113,7 +113,7 @@ app.post('/import', function(req, res) {
 
       connection.query(sql, [parsedData], function(err) {
         if (err) throw err;
-        res.render('import', {success: true});
+        res.render('import', pugArgs(req, {success: true}));
       });
     });
 
