@@ -7,6 +7,7 @@ var session = require('express-session');
 var passport = require('passport');
 var glob = require('glob-all');
 var logger = require('winston');
+var _ = require('lodash');
 
 var app = express();
 var server = http.createServer(app);
@@ -34,6 +35,7 @@ const sessionMiddleware = session({
   secret: 'thisisasecret',
   key: 'sessionId',
   resave: false,
+  maxAge: 9999999,
   saveUninitialized: false
 });
 
@@ -49,13 +51,16 @@ app.disable('x-powered-by');
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Switch authentication strategies based on request
 app.use(function (req, res, next) {
   // Use session cookie (if any)
-  var middleware = passport.session();
-
-  middleware(req, res, next);
+  passport.session()(req, res, next);
 });
+
+function pugArgs(req, extra) {
+  return _.merge({
+    user: req.user
+  }, extra);
+}
 
 /**
  * Route configuration
@@ -64,11 +69,11 @@ app.use(function (req, res, next) {
 app.use('/', require('./auth'));
 
 app.get('/login', function (req, res) {
-  res.render('login');
+  res.render('login', pugArgs(req));
 });
 
 app.get('/', function (req, res) {
-  res.render('home');
+  res.render('home', pugArgs(req));
 });
 
 
@@ -76,13 +81,13 @@ app.get('/', function (req, res) {
 // remaining pages are protected
 app.use(function (req, res, next) {
   if (req.isAuthenticated()) {
-    return next()
+    return next();
   }
   res.redirect('/login');
 });
 
 app.get('/protected', function (req, res) {
-  res.render('page2');
+  res.render('page2', pugArgs());
 });
 
 

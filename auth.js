@@ -3,13 +3,9 @@
 var passport = require('passport');
 var router = require('express').Router();
 var _ = require('lodash');
+var logger = require('winston');
 
 var LocalStrategy = require('passport-local').Strategy;
-
-// Store just user ID in the session
-passport.serializeUser(function (user, done) {
-    done(null, String(user.id));
-});
 
 var users = [
     {
@@ -19,8 +15,15 @@ var users = [
     }
 ];
 
+// Store just user ID in the session
+passport.serializeUser(function (user, done) {
+    logger.debug('serializing user', user);
+    done(null, String(user.id));
+});
+
 // Convert user ID back into user object
 passport.deserializeUser(function (userId, done) {
+    logger.debug('deserializing user', userId);
     var user = _.find(users, { id: userId });
     if (user) {
         done(null, user);
@@ -38,7 +41,7 @@ passport.use(new LocalStrategy({
     done(null, user);
 }));
 
-router.post('/auth/signin', function (req, res, next) {
+router.post('/login', function (req, res, next) {
 
     var middleware = passport.authenticate('local', {
         successRedirect: '/',
@@ -48,7 +51,7 @@ router.post('/auth/signin', function (req, res, next) {
     middleware(req, res, next);
 });
 
-router.post('/auth/logout', function (req, res) {
+router.get('/logout', function (req, res) {
     req.logout();
     res.sendStatus(200);
 });

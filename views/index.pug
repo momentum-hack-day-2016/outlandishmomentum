@@ -8,4 +8,10 @@ html(lang="en")
     link(href='momentum.css', rel='stylesheet')
   body
     #container.col
+      block user
+        if (user)
+          p Hello #{user.username}
+          a(href='/logout') Logout
+        else
+          a(href='/login') Login
       block content
