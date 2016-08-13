@@ -1,100 +1,75 @@
+var express = require('express');
 var http = require('http');
-var url = require('url');
-var fs = require('fs');
-qs = require('querystring');
+var path = require('path');
+var bodyParser = require('body-parser');
+var expressWinston = require('express-winston');
+var session = require('express-session');
+var passport = require('passport');
+var glob = require('glob-all');
+var logger = require('winston');
 
-var listHead = '';
-var listFoot = '';
-var sourceListFile = './data/sources.xml';
-var sourceList;
+var app = express();
+var server = http.createServer(app);
 
-function init() {
-  //listHead = //?Stream in
-  //listFoot = //ditto;
-  // Open source List  
-}
+/**
+ * Express configuration
+ */
 
-function startServer() {
-  init();
-  http.createServer(function (req, res) {
-    serviceRequest(req, res);
-  }).listen(3000, '127.0.0.1');
-  console.log('Server running at http://127.0.0.1:3000/');
-} // End of f startServer
+app.set('view engine', 'pug');
 
-function serviceRequest( req, res ) {
-  var urlStuff = url.parse(req.url, true);
-  showRequest(req);
-  servePage(urlStuff.path, urlStuff.query, req, res);
-  console.log('Request serviced');
-} // End of f serviceRequest
+app.use(express.static(path.join(__dirname, 'assets')));
 
-function showRequest( req ) {
-  console.log("-------------------------------------");
-  console.log(req.method);
-  console.log(req.headers);
-  console.log(url.parse(req.url, true));
-} //End of f showRequest
+// Only log requests after static files have been dealt with
+app.use(expressWinston.logger({
+  winstonInstance: logger
+}));
 
-function servePage(path, qry, req, res) {
-  var found = false;
+// Request parsing
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.raw({type: 'text/csv'}));
 
-  var pageName = './resources'+((path == '/') ? '/index.html' : path);
-  if( fs.existsSync(pageName) ) { 
-    var page = fs.createReadStream(pageName);
-    if( page !== undefined ) {
-      page.on('error', function(err) {
-        console.log(err);
-        res.statusCode = 404;
-        res.end('<html><body>Not found or error</body></html>');
-      });
-      if(  pageName.substring(pageName.lastIndexOf('.')) == '.css' ) {
-        res.writeHead(200, { "Content-Type": "text/css" });
-      }
-      else {
-        res.writeHead(200, { "Content-Type": "text/html" });
-      }
-      page.pipe(res);
-      found = true;
-    }
-  }
+const sessionMiddleware = session({
+  secret: 'thisisasecret',
+  key: 'sessionId',
+  cookie: {httpOnly: true, maxAge: 10000},
+  resave: false,
+  rolling: true,
+  saveUninitialized: false
+});
 
-  if( !found & qry.src !== undefined ) {
-    handleForm(qry.src, req, res);
-    found = true;
-  }
+app.use(sessionMiddleware);
 
-  if( !found ) {
-   res.statusCode = 404;
-   res.end('<html><body>Sorry! Request not recognised.</body></html>');
-   console.log('Page NOT found');
-  }
- 
-} //End of f servePage
+// Disable X-Powered-By header
+app.disable('x-powered-by');
 
-function handleForm(formName, req, res) {
-  var body='';
-  req.on('data', function(data) {
-    body += data;
-  });
-  req.on('end', function () {
-    var formVals = qs.parse(body);
-    replyToForm(formName, formVals, req, res); 
-  });
-}
+/*
+ * Authentication and authorisation
+ */
 
-function replyToForm(formName, formVals, req, res) {
-  var reply = '<html><body>Form Request: ' + formName + '<br />';
-  console.log('Form name: ' + formName + ' Vals: ');
-  for(var val in formVals){
-    var showVal = val + ' : ' + formVals[val];
-    console.log(showVal);
-    reply += showVal + '<br />';
-  }
-  reply += '<p><a href="http://127.0.0.1:1337/">Back to Welcome Page</a></p>' +
-           '</body></html>'
-  res.writeHead(200, { "Content-Type": "text/html" });
-  res.end(reply);
-}
+app.use(passport.initialize());
 
-startServer();
+// Switch authentication strategies based on request
+app.use(function (req, res, next) {
+  // Use session cookie (if any)
+  var middleware = passport.session();
+
+  middleware(req, res, next);
+});
+
+/**
+ * Route configuration
+ */
+
+app.use('/', require('./auth'));
+
+app.get('/', function (req, res) {
+  res.render('home');
+});
+
+app.get('/page2', function (req, res) {
+  res.render('page2');
+});
+
+logger.info('listening on port 3000');
+server.listen(3000, '127.0.0.1');
