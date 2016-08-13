@@ -29,9 +29,8 @@ app.use(expressWinston.logger({
 }));
 
 // Request parsing
-//app.use(bodyParser.json());
-//app.use(bodyParser.urlencoded({extended: true}));
-//app.use(bodyParser.raw({type: 'text/csv'}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(busboy());
 
 const sessionMiddleware = session({
@@ -81,18 +80,17 @@ app.get('/', function (req, res) {
   res.render('home', pugArgs(req));
 });
 
-
-
 // remaining pages are protected
 app.use(function (req, res, next) {
+  console.log('is authed?', req.isAuthenticated());
   if (req.isAuthenticated()) {
     return next();
   }
   res.redirect('/login');
 });
 
-app.get('/protected', function (req, res) {
-  res.render('page2', pugArgs());
+app.get('/import', function (req, res) {
+  res.render('import');
 });
 
 app.post('/import', function(req, res) {
