@@ -8,6 +8,7 @@ var session = require('express-session');
 var passport = require('passport');
 var glob = require('glob-all');
 var logger = require('winston');
+var _ = require('lodash');
 var parse = require('csv-parse/lib/sync');
 var mysql = require('mysql');
 
@@ -39,6 +40,7 @@ const sessionMiddleware = session({
   key: 'sessionId',
   cookie: {httpOnly: true, maxAge: 10000},
   resave: false,
+  maxAge: 9999999,
   rolling: true,
   saveUninitialized: false
 });
@@ -55,13 +57,16 @@ app.disable('x-powered-by');
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Switch authentication strategies based on request
 app.use(function (req, res, next) {
   // Use session cookie (if any)
-  var middleware = passport.session();
-
-  middleware(req, res, next);
+  passport.session()(req, res, next);
 });
+
+function pugArgs(req, extra) {
+  return _.merge({
+    user: req.user
+  }, extra);
+}
 
 /**
  * Route configuration
@@ -70,24 +75,24 @@ app.use(function (req, res, next) {
 app.use('/', require('./auth'));
 
 app.get('/login', function (req, res) {
-  res.render('login');
+  res.render('login', pugArgs(req));
 });
 
 app.get('/', function (req, res) {
-  res.render('home');
+  res.render('home', pugArgs(req));
 });
 
 // remaining pages are protected
 app.use(function (req, res, next) {
   console.log('is authed?', req.isAuthenticated());
   if (req.isAuthenticated()) {
-    return next()
+    return next();
   }
   res.redirect('/login');
 });
 
 app.get('/import', function (req, res) {
-  res.render('import');
+  res.render('import', pugArgs(req));
 });
 
 app.post('/import', function(req, res) {
@@ -110,7 +115,7 @@ app.post('/import', function(req, res) {
 
       connection.query(sql, [parsedData], function(err) {
         if (err) throw err;
-        res.render('import', {success: true});
+        res.render('import', pugArgs(req, {success: true}));
       });
     });
 
