@@ -1,0 +1,14 @@
+extends index
+
+block content
+    div#login
+        h2 Login
+        form(method='post', action='/auth/signin')
+            div
+                label(for='username') Username
+                input#username(name='username', type='text')
+            div
+                label(for='password') Password
+                input#password(name='password', type='password')
+            div
+                button(type='submit') Login

@@ -23,7 +23,8 @@ app.use(express.static(path.join(__dirname, 'assets')));
 
 // Only log requests after static files have been dealt with
 app.use(expressWinston.logger({
-  winstonInstance: logger
+  winstonInstance: logger,
+  expressFormat: true
 }));
 
 // Request parsing
@@ -51,6 +52,7 @@ app.disable('x-powered-by');
  */
 
 app.use(passport.initialize());
+app.use(passport.session());
 
 // Switch authentication strategies based on request
 app.use(function (req, res, next) {
@@ -66,12 +68,26 @@ app.use(function (req, res, next) {
 
 app.use('/', require('./auth'));
 
+app.get('/login', function (req, res) {
+  res.render('login');
+});
+
 app.get('/', function (req, res) {
   res.render('home');
 });
 
-app.get('/import', function (req, res) {
-  res.render('import');
+
+
+// remaining pages are protected
+app.use(function (req, res, next) {
+  if (req.isAuthenticated()) {
+    return next()
+  }
+  res.redirect('/login');
+});
+
+app.get('/protected', function (req, res) {
+  res.render('page2');
 });
 
 app.post('/import', function(req, res) {
