@@ -9,9 +9,11 @@ var passport = require('passport');
 var glob = require('glob-all');
 var logger = require('winston');
 var parse = require('csv-parse/lib/sync');
+var mysql = require('mysql');
 
 var app = express();
 var server = http.createServer(app);
+var connection;
 
 /**
  * Express configuration
@@ -117,5 +119,25 @@ app.post('/import', function(req, res) {
   req.pipe(req.busboy);
 });
 
+function connectToDb() {
+
+  connection = mysql.createConnection({
+    host     : '54.194.89.201',
+    user     : 'momentum',
+    password : 'momentum',
+    database : 'momentum'
+  });
+
+  connection.connect();
+
+  connection.query('SELECT * from data', function(err, rows, fields) {
+    if (!err)
+      console.log('The table contains: ', rows);
+    else
+      throw err;
+  });
+}
+
 logger.info('listening on port 3000');
 server.listen(3000, '127.0.0.1');
+connectToDb();
