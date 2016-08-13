@@ -1,0 +1,8 @@
+extends index
+
+block content
+    if success
+        h1 Success!
+    form(method='POST' name='data' enctype='multipart/form-data')
+        input(type='file' name='csv')
+        button Submit

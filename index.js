@@ -2,11 +2,13 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 var bodyParser = require('body-parser');
+var busboy = require('connect-busboy');
 var expressWinston = require('express-winston');
 var session = require('express-session');
 var passport = require('passport');
 var glob = require('glob-all');
 var logger = require('winston');
+var parse = require('csv-parse/lib/sync');
 
 var app = express();
 var server = http.createServer(app);
@@ -25,9 +27,10 @@ app.use(expressWinston.logger({
 }));
 
 // Request parsing
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.raw({type: 'text/csv'}));
+//app.use(bodyParser.json());
+//app.use(bodyParser.urlencoded({extended: true}));
+//app.use(bodyParser.raw({type: 'text/csv'}));
+app.use(busboy());
 
 const sessionMiddleware = session({
   secret: 'thisisasecret',
@@ -67,8 +70,37 @@ app.get('/', function (req, res) {
   res.render('home');
 });
 
-app.get('/page2', function (req, res) {
-  res.render('page2');
+app.get('/import', function (req, res) {
+  res.render('import');
+});
+
+app.post('/import', function(req, res) {
+  console.log('received csv', req.body);
+
+  req.busboy.on('file', function (fieldname, file, filename) {
+    console.log("Uploading: " + filename);
+
+    var csvData = [];
+    file.on('data', function(data) {
+      csvData = csvData.concat(data);
+    });
+    file.on('end', function() {
+      csvData = String(csvData).trim();
+      var parsedData = parse(csvData);
+      parsedData = parsedData.slice(1);
+
+      var sql = "INSERT INTO data (groupid, first_name, last_name, date_of_birth, postcode, mobile_phone" +
+        "twitter_handle, facebook_link, candidate) VALUES ?";
+
+      connection.query(sql, [parsedData], function(err) {
+        if (err) throw err;
+        res.render('import', {success: true});
+      });
+    });
+
+
+  });
+  req.pipe(req.busboy);
 });
 
 logger.info('listening on port 3000');
