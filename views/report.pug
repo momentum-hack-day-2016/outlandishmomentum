@@ -1,0 +1,11 @@
+extends index
+
+block content
+    table
+        tr
+            th First Name
+            th Last Name
+        each voter in voters
+            tr
+                td= voter.first_name
+                td= voter.last_name

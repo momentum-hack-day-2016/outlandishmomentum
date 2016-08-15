@@ -38,7 +38,7 @@ app.use(busboy());
 const sessionMiddleware = session({
   secret: 'thisisasecret',
   key: 'sessionId',
-  cookie: {httpOnly: true, maxAge: 10000},
+  cookie: {httpOnly: true, maxAge: 9999999},
   resave: false,
   maxAge: 9999999,
   rolling: true,
@@ -84,11 +84,21 @@ app.get('/', function (req, res) {
 
 // remaining pages are protected
 app.use(function (req, res, next) {
-  console.log('is authed?', req.isAuthenticated());
   if (req.isAuthenticated()) {
     return next();
   }
   res.redirect('/login');
+});
+
+app.get('/report', function (req, res) {
+  connection.query('SELECT * from data', function(err, rows) {
+    if (!err) {
+      res.render('report', pugArgs(req, { voters: rows }));
+    }
+    else {
+      throw err;
+    }
+  });
 });
 
 app.get('/import', function (req, res) {
@@ -96,11 +106,7 @@ app.get('/import', function (req, res) {
 });
 
 app.post('/import', function(req, res) {
-  console.log('received csv', req.body);
-
   req.busboy.on('file', function (fieldname, file, filename) {
-    console.log("Uploading: " + filename);
-
     var csvData = [];
     file.on('data', function(data) {
       csvData = csvData.concat(data);
@@ -110,10 +116,12 @@ app.post('/import', function(req, res) {
       var parsedData = parse(csvData);
       parsedData = parsedData.slice(1);
 
-      var sql = "INSERT INTO data (groupid, first_name, last_name, date_of_birth, postcode, mobile_phone" +
+      var sql = "INSERT INTO data (groupid, first_name, last_name, date_of_birth, postcode, mobile_phone, " +
         "twitter_handle, facebook_link, candidate) VALUES ?";
 
-      connection.query(sql, [parsedData], function(err) {
+      sql = mysql.format(sql, [parsedData]);
+
+      connection.query(sql, function(err) {
         if (err) throw err;
         res.render('import', pugArgs(req, {success: true}));
       });
@@ -134,13 +142,6 @@ function connectToDb() {
   });
 
   connection.connect();
-
-  connection.query('SELECT * from data', function(err, rows, fields) {
-    if (!err)
-      console.log('The table contains: ', rows);
-    else
-      throw err;
-  });
 }
 
 logger.info('listening on port 3000');

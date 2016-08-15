@@ -9,6 +9,7 @@ html(lang="en")
   body
     #container.col
       block user
+        a(href='/') Home
         if (user)
           p Hello #{user.username}
           a(href='/logout') Logout
