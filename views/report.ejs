@@ -1,0 +1,61 @@
+<!-- views/index.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include head %>
+</head>
+<body>
+
+<header>
+    <% include header %>
+</header>
+
+<div id="report">
+
+    <h2>Report</h2>
+
+    <form action="/report" method="get">
+        <div class="form-inline">
+            <label for="name">Filter by name</label><br />
+            <input class="form-control" type="text" name="name" id="name">
+            <button type="submit" class="btn btn-default">Filter</button>
+            <a class="clear-button" href="/report">Clear</a>
+        </div>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Date of birth</th>
+            <th>Postcode</th>
+            <th>Mobile</th>
+            <th>Twitter</th>
+            <th>Facebook</th>
+            <th>Supports</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% for(var i=0; i
+        <rows.length
+        ; i++) { %>
+        <tr>
+            <td><%= rows[i].first_name %></td>
+            <td><%= rows[i].last_name %></td>
+            <td><%= moment(rows[i].date_of_birth).format('YYYY/MM/DD') %></td>
+            <td><%= rows[i].postcode %></td>
+            <td><%= rows[i].mobile_phone %></td>
+            <td><%= rows[i].twitter_handle %></td>
+            <td><%= rows[i].facebook_link %></td>
+            <td><%= rows[i].candidate %></td>
+        </tr>
+        <% } %>
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>

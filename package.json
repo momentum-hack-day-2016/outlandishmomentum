@@ -17,15 +17,15 @@
     "connect-busboy": "0.0.2",
     "csv": "^1.1.0",
     "csv-parse": "^1.1.7",
+    "ejs": "^2.5.1",
     "express": "^4.14.0",
     "express-session": "^1.14.0",
-    "express-winston": "^2.0.0",
     "glob-all": "^3.1.0",
     "lodash": "^4.15.0",
+    "moment": "^2.14.1",
     "mysql": "^2.11.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
-    "pug": "^2.0.0-beta5",
     "winston": "^2.2.0"
   }
 }
